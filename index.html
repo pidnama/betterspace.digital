@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>betterspace.digital — Own your space on the internet</title>
+
+    <!-- Google Fonts: JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              terminal: "#00FFFF",
+            },
+            fontFamily: {
+              mono: [
+                "JetBrains Mono",
+                "ui-monospace",
+                "SFMono-Regular",
+                "Menlo",
+                "Monaco",
+                "Consolas",
+                "Liberation Mono",
+                "monospace",
+              ],
+            },
+            keyframes: {
+              gradientMove: {
+                "0%, 100%": { backgroundPosition: "0% 0%" },
+                "50%": { backgroundPosition: "100% 100%" },
+              },
+              floatSlow: {
+                "0%, 100%": { transform: "translateY(0px) translateX(0px)" },
+                "50%": { transform: "translateY(-16px) translateX(8px)" },
+              },
+            },
+            animation: {
+              "gradient-move": "gradientMove 30s ease infinite",
+              "float-slow": "floatSlow 16s ease-in-out infinite",
+            },
+            boxShadow: {
+              neo: "inset 0 1px 0 rgba(255,255,255,0.08), 0 8px 24px rgba(0,255,255,0.15)",
+              neoHover:
+                "inset 0 1px 0 rgba(255,255,255,0.12), 0 16px 40px rgba(0,255,255,0.22)",
+            },
+            backdropBlur: {
+              xs: "2px",
+            },
+          },
+        },
+        darkMode: "class",
+      };
+    </script>
+
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      /* Animated gradient background (kept subtle; not scroll-based) */
+      .bg-animated {
+        background-image: radial-gradient(
+            1200px 600px at 10% 10%,
+            rgba(0, 255, 255, 0.05),
+            transparent 60%
+          ),
+          radial-gradient(
+            1000px 500px at 90% 20%,
+            rgba(0, 128, 255, 0.05),
+            transparent 60%
+          ),
+          radial-gradient(
+            800px 400px at 10% 90%,
+            rgba(0, 255, 200, 0.04),
+            transparent 60%
+          ),
+          linear-gradient(135deg, #0b0b10 0%, #07070b 40%, #050508 100%);
+        background-size: 200% 200%, 200% 200%, 200% 200%, 100% 100%;
+        animation: gradientMove 40s ease-in-out infinite;
+      }
+
+      /* Subtle scanline/noise feel using layered gradients */
+      .bg-noise {
+        position: relative;
+        isolation: isolate;
+      }
+
+      .bg-noise::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background-image: repeating-linear-gradient(
+            0deg,
+            rgba(255, 255, 255, 0.015) 0px,
+            rgba(255, 255, 255, 0.015) 1px,
+            transparent 2px
+          ),
+          radial-gradient(
+            1px 1px at 25% 35%,
+            rgba(255, 255, 255, 0.04),
+            transparent 60%
+          ),
+          radial-gradient(
+            1px 1px at 75% 65%,
+            rgba(255, 255, 255, 0.04),
+            transparent 60%
+          );
+        mix-blend-mode: overlay;
+        opacity: 0.6;
+        z-index: -1;
+      }
+
+      /* scroll-reveal removed */
+
+      /* Hero height: header + hero == 100vh */
+      .hero-full {
+        height: calc(100vh - var(--header-h, 64px));
+        box-sizing: border-box;
+      }
+    </style>
+  </head>
+
+  <body class="min-h-screen bg-black text-white font-mono antialiased">
+    <!-- Background -->
+    <div class="fixed inset-0 -z-10 bg-animated bg-noise"></div>
+    <!-- Glow blobs (subtle, not scroll-based) -->
+    <div class="pointer-events-none fixed inset-0 -z-10">
+      <div
+        class="absolute top-16 left-16 h-64 w-64 rounded-full bg-terminal/10 blur-3xl"
+      ></div>
+      <div
+        class="absolute bottom-24 right-24 h-80 w-80 rounded-full bg-cyan-500/10 blur-3xl"
+        style="animation-delay: -4s"
+      ></div>
+    </div>
+
+    <!-- Nav -->
+    <header
+      id="site-header"
+      class="sticky top-0 z-40 border-b border-white/5 bg-black/40 backdrop-blur-xs"
+    >
+      <div
+        class="mx-auto max-w-7xl px-8 py-6 flex items-center justify-between"
+      >
+        <a
+          href="#home"
+          class="flex items-center gap-3 group"
+          aria-label="betterspace.digital home"
+        >
+          <span
+            class="relative inline-flex h-12 w-12 items-center justify-center rounded-2xl neo-surface ring-1 ring-inset ring-cyan-400/40"
+          >
+            <span class="absolute inset-0 rounded-2xl bg-cyan-400/20"></span>
+            <span class="relative font-mono text-cyan-300 text-xl">bd</span>
+          </span>
+          <span
+            class="text-slate-100 font-semibold tracking-tight text-xl md:text-2xl"
+            >betterspace.digital</span
+          >
+        </a>
+        <nav class="hidden md:flex items-center gap-10 text-base">
+          <a
+            href="#about"
+            class="text-white/80 hover:text-terminal transition-colors"
+            >About & Services</a
+          >
+          <a
+            href="#work"
+            class="text-white/80 hover:text-terminal transition-colors"
+            >Our Work</a
+          >
+        </nav>
+      </div>
+    </header>
+
+    <main id="home" class="">
+      <!-- Hero -->
+      <section
+        class="relative hero-full flex items-center pt-28 pb-24 sm:pt-32 sm:pb-32"
+      >
+        <div
+          class="mx-auto max-w-7xl px-6 sm:px-8 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center w-full"
+        >
+          <div class="lg:col-span-6 xl:col-span-6">
+            <h1
+              class="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight tracking-tight"
+            >
+              <span class="text-slate-100">Own your space</span>
+              <span
+                class="block bg-clip-text text-transparent bg-gradient-to-r from-cyan-300 via-cyan-200 to-cyan-400"
+                >on the internet.</span
+              >
+            </h1>
+            <p class="mt-6 max-w-2xl text-slate-300 text-lg">
+              We build unforgettable digital homes for people doing
+              unforgettable things.
+            </p>
+            <div class="mt-10 flex flex-wrap items-center gap-4">
+              <a
+                href="#work"
+                class="inline-flex items-center gap-2 rounded-2xl px-6 py-4 border border-cyan-400/30 text-cyan-300 hover:bg-cyan-400/10 transition-colors neo-surface"
+                aria-label="See our work"
+              >
+                <span class="font-semibold">See our work</span>
+              </a>
+            </div>
+          </div>
+          <div class="lg:col-span-6 xl:col-span-6">
+            <a
+              href="#work"
+              aria-label="Jump to our work"
+              class="group block relative rounded-3xl p-4 sm:p-6 neo-surface ring-1 ring-inset ring-cyan-400/20 hover:ring-cyan-300/40 transition-all duration-300"
+            >
+              <div
+                class="absolute -inset-2 rounded-[28px] bg-cyan-400/10 blur-2xl"
+              ></div>
+              <div
+                class="relative w-full overflow-hidden rounded-2xl ring-1 ring-cyan-400/20"
+              >
+                <div
+                  class="relative aspect-[4/3] sm:aspect-[16/10] lg:aspect-[3/2] xl:aspect-[16/10]"
+                >
+                  <img
+                    src="https://peterdeghaim.com/static/media/rejjie.e030526a7f49dea6c185.webp"
+                    alt="haveyoustoppedgrowing.com screenshot"
+                    class="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                  />
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- About -->
+      <section id="about" class="py-24 sm:py-32 border-t border-cyan-400/10">
+        <div class="mx-auto max-w-7xl px-6 sm:px-8 mt-16">
+          <div class="mx-auto max-w-6xl text-left">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+              <div class="lg:col-span-6 xl:col-span-6">
+                <h2
+                  id="services"
+                  class="text-3xl sm:text-4xl font-bold tracking-tight text-slate-100"
+                >
+                  What we do
+                </h2>
+                <p
+                  class="mt-4 md:mt-6 text-lg md:text-xl leading-relaxed text-slate-300"
+                >
+                  betterspace.digital helps people own their space on the
+                  internet. We’re designers, devs, and dreamers building brands,
+                  websites, and systems that stick in people’s heads — and
+                  hearts.
+                </p>
+                <p
+                  class="mt-4 text-base md:text-lg leading-relaxed text-slate-400"
+                >
+                  Designers, devs, dreamers. Minimal meetings, maximum craft.
+                </p>
+              </div>
+              <a href="#work" class="lg:col-span-6 xl:col-span-6">
+                <div
+                  class="group relative rounded-3xl p-4 sm:p-6 neo-surface ring-1 ring-inset ring-cyan-400/20 hover:ring-cyan-300/40 transition-all duration-300"
+                >
+                  <div
+                    class="absolute -inset-2 rounded-[28px] bg-cyan-400/10 blur-2xl"
+                  ></div>
+                  <div
+                    class="relative w-full overflow-hidden rounded-2xl ring-1 ring-cyan-400/20"
+                  >
+                    <div
+                      class="relative aspect-[4/3] sm:aspect-[16/10] lg:aspect-[3/2]"
+                    >
+                      <img
+                        src="Assets/Yewande.png"
+                        alt="Case study preview"
+                        class="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+          <div
+            class="mt-12 md:mt-16 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
+          >
+            <div
+              class="rounded-2xl p-6 neo-surface ring-1 ring-inset ring-cyan-400/20"
+            >
+              <h3 class="font-semibold text-slate-100">Branding & Identity</h3>
+              <div class="mt-4 font-mono text-sm text-cyan-200">
+                <div class="flex items-start gap-3">
+                  <span class="text-cyan-300">$</span
+                  ><span>Uncover a brand identity that’s true to you</span>
+                </div>
+                <div class="flex items-start gap-3 mt-2">
+                  <span class="text-cyan-300">$</span
+                  ><span
+                    >Craft your logo suite, color, type and brand
+                    components</span
+                  >
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="rounded-2xl p-6 neo-surface ring-1 ring-inset ring-cyan-400/20"
+            >
+              <h3 class="font-semibold text-slate-100">
+                Website Design & Development
+              </h3>
+              <div class="mt-4 font-mono text-sm text-cyan-200">
+                <div class="flex items-start gap-3">
+                  <span class="text-cyan-300">$</span
+                  ><span
+                    >Design custom systems and components for your site</span
+                  >
+                </div>
+                <div class="flex items-start gap-3 mt-2">
+                  <span class="text-cyan-300">$</span
+                  ><span>Ship a high‑performance, accessible build</span>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="rounded-2xl p-6 neo-surface ring-1 ring-inset ring-cyan-400/20"
+            >
+              <h3 class="font-semibold text-slate-100">
+                Website Marketing & Growth
+              </h3>
+              <div class="mt-4 font-mono text-sm text-cyan-200">
+                <div class="flex items-start gap-3">
+                  <span class="text-cyan-300">$</span
+                  ><span
+                    >Turn search into a compounding acquisition channel</span
+                  >
+                </div>
+                <div class="flex items-start gap-3 mt-2">
+                  <span class="text-cyan-300">$</span
+                  ><span
+                    >Run content, email and analytics to grow over time</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Work -->
+      <section id="work" class="py-24 sm:py-32 border-t border-cyan-400/10">
+        <div class="mx-auto max-w-7xl px-6 sm:px-8">
+          <div class="flex items-end justify-between gap-6">
+            <h2
+              class="text-3xl sm:text-4xl font-bold tracking-tight text-slate-100"
+            >
+              Our Work
+            </h2>
+          </div>
+          <div
+            class="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-8 justify-items-center sm:justify-items-stretch"
+          >
+            <!-- Card template repeated -->
+            <a
+              href="https://haveyoustoppedgrowing.com"
+              target="_blank"
+              rel="noopener"
+              class="group w-full max-w-xl rounded-2xl p-8 neo-surface ring-1 ring-inset ring-cyan-400/20 hover:ring-cyan-300/40 transition-all duration-300 will-change-transform hover:scale-[1.02] hover:shadow-[0_24px_64px_-20px_rgba(34,211,238,0.25)]"
+            >
+              <div class="flex items-center justify-between">
+                <span class="font-mono text-cyan-200 text-sm"
+                  >haveyoustoppedgrowing.com</span
+                >
+                <span
+                  class="h-2 w-2 rounded-full bg-cyan-300 shadow-[0_0_12px_rgba(0,255,255,0.9)]"
+                ></span>
+              </div>
+              <div
+                class="mt-4 aspect-[4/3] overflow-hidden rounded-xl ring-1 ring-cyan-400/20"
+              >
+                <img
+                  src="https://peterdeghaim.com/static/media/rejjie.e030526a7f49dea6c185.webp"
+                  alt="haveyoustoppedgrowing.com screenshot"
+                  class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                />
+              </div>
+            </a>
+
+            <a
+              href="https://breakfastroad.com"
+              target="_blank"
+              rel="noopener"
+              class="group w-full max-w-xl rounded-2xl p-8 neo-surface ring-1 ring-inset ring-cyan-400/20 hover:ring-cyan-300/40 transition-all duration-300 will-change-transform hover:scale-[1.02] hover:shadow-[0_24px_64px_-20px_rgba(34,211,238,0.25)]"
+            >
+              <div class="flex items-center justify-between">
+                <span class="font-mono text-cyan-200 text-sm"
+                  >breakfastroad.com</span
+                >
+                <span
+                  class="h-2 w-2 rounded-full bg-cyan-300 shadow-[0_0_12px_rgba(0,255,255,0.9)]"
+                ></span>
+              </div>
+              <div
+                class="mt-4 aspect-[4/3] overflow-hidden rounded-xl ring-1 ring-cyan-400/20"
+              >
+                <img
+                  src="assets/Breakfast%20Road.png"
+                  alt="breakfastroad.com screenshot"
+                  class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                />
+              </div>
+            </a>
+
+            <a
+              href="https://jasdacare.au"
+              target="_blank"
+              rel="noopener"
+              class="group w-full max-w-xl rounded-2xl p-8 neo-surface ring-1 ring-inset ring-cyan-400/20 hover:ring-cyan-300/40 transition-all duration-300 will-change-transform hover:scale-[1.02] hover:shadow-[0_24px_64px_-20px_rgba(34,211,238,0.25)]"
+            >
+              <div class="flex items-center justify-between">
+                <span class="font-mono text-cyan-200 text-sm"
+                  >jasdacare.au</span
+                >
+                <span
+                  class="h-2 w-2 rounded-full bg-cyan-300 shadow-[0_0_12px_rgba(0,255,255,0.9)]"
+                ></span>
+              </div>
+              <div
+                class="mt-4 aspect-[4/3] overflow-hidden rounded-xl ring-1 ring-cyan-400/20"
+              >
+                <img
+                  src="assets/Jasda%20Care.png"
+                  alt="jasdacare.au screenshot"
+                  class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                />
+              </div>
+            </a>
+
+            <a
+              href="https://yewande.xyz"
+              target="_blank"
+              rel="noopener"
+              class="group w-full max-w-xl rounded-2xl p-8 neo-surface ring-1 ring-inset ring-cyan-400/20 hover:ring-cyan-300/40 transition-all duration-300 will-change-transform hover:scale-[1.02] hover:shadow-[0_24px_64px_-20px_rgba(34,211,238,0.25)]"
+            >
+              <div class="flex items-center justify-between">
+                <span class="font-mono text-cyan-200 text-sm">yewande.xyz</span>
+                <span
+                  class="h-2 w-2 rounded-full bg-cyan-300 shadow-[0_0_12px_rgba(0,255,255,0.9)]"
+                ></span>
+              </div>
+              <div
+                class="mt-4 aspect-[4/3] overflow-hidden rounded-xl ring-1 ring-cyan-400/20"
+              >
+                <img
+                  src="assets/Yewande.png"
+                  alt="yewande.xyz screenshot"
+                  class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                />
+              </div>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Services (merged into About above) -->
+
+      <!-- Contact / CTA -->
+      <section id="contact" class="py-24 sm:py-32 border-t border-cyan-400/10">
+        <div class="mx-auto max-w-3xl px-6 sm:px-8 text-center">
+          <h2
+            class="text-3xl sm:text-4xl font-bold tracking-tight text-slate-100"
+          >
+            Let's build something unforgettable
+          </h2>
+
+          <div
+            class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4"
+          >
+            <a
+              href="mailto:hello@betterspace.digital"
+              class="inline-flex items-center gap-2 rounded-2xl px-6 py-4 text-slate-900 bg-cyan-300 hover:bg-cyan-200 active:bg-cyan-400 transition-colors neo-button"
+            >
+              <span class="font-semibold">Start a conversation</span>
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="border-t border-cyan-400/10 py-8">
+      <div
+        class="mx-auto max-w-7xl px-6 sm:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-400"
+      >
+        <p>copyright © 2025<span id="y"></span> betterspace.digital</p>
+        <div class="flex items-center gap-6">
+          <span
+            class="relative inline-flex h-12 w-12 items-center justify-center rounded-2xl neo-surface ring-1 ring-inset ring-cyan-400/40"
+          >
+            <a href="#" class="absolute inset-0 rounded-2xl bg-cyan-400/20"></a>
+            <span class="relative font-mono text-cyan-300 text-xl">bd</span>
+          </span>
+        </div>
+      </div>
+    </footer>
+    <script>
+      // Set --header-h CSS variable to header height so hero can fill remaining viewport
+      (function () {
+        var header = document.getElementById("site-header");
+        if (!header) return;
+        function setHeaderVar() {
+          var h = header.offsetHeight || 64;
+          document.documentElement.style.setProperty("--header-h", h + "px");
+        }
+        setHeaderVar();
+        window.addEventListener("resize", setHeaderVar);
+      })();
+    </script>
+  </body>
+</html>
